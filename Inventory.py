@@ -1,6 +1,6 @@
 import os
 import csv
-from abc import ABC, abstractmethod
+from ClothingItemClass import BaseItem,ClothingItem,PremiumItem
 from datetime import datetime
 
 #Constants
@@ -9,7 +9,7 @@ INVENTORY_FILE = "Data/inventory.csv"
 LOG_FILE       = "Data/event_log.csv"
 LOW_STOCK_THRESHOLD = 5
 
-
+# Utility function
 def log_event(action , detail):
     try:
       file_exists = os.path.isfile(LOG_FILE)
@@ -19,117 +19,12 @@ def log_event(action , detail):
           writer.writerow(["timestamp", "action", "detail"])
         writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"),action, detail])
     except IOError as e:
-        print(f"[LOG ERROR] Could not write to log: {e}")
-
-class BaseItem(ABC):
-  def __init__(self, item_id, name, price, quantity):
-    self._item_id  = item_id
-    self._name     = name
-    self._price    = price
-    self._quantity = quantity
-
-  @property
-  def item_id(self):   
-    return self._item_id
-  
-  @property
-  def name(self):      
-      return self._name
-  
-  @property
-  def price(self):     
-      return self._price
-  
-  @price.setter
-  def price(self, v):
-    if v < 0:
-      raise ValueError("Price cannot be negative.")
-    self._price = v
-
-  @property
-  def quantity(self):  return self._quantity
-
-  @quantity.setter
-  def quantity(self, v):
-    if v < 0:
-      raise ValueError("Quantity cannot be negative.")
-    self._quantity = v
-
-  @abstractmethod
-  def category(self):
-      pass
-
-  @abstractmethod
-  def summary(self):
-      pass
-
-  def __str__(self):
-    return (f"[{self._item_id}] {self._name} | "
-            f"${self._price:.2f} | Qty: {self._quantity} | "
-            f"Category: {self.category()}")
-
-  def __repr__(self):
-    return (f"{self.__class__.__name__}("
-            f"id={self._item_id!r}, name={self._name!r}, "
-            f"price={self._price}, qty={self._quantity})")
-
-  def __eq__(self, other):
-    if not isinstance(other, BaseItem):
-      return NotImplemented
-    return self._item_id == other._item_id
-
-  def stock_value(self) -> float:
-    return self._price * self._quantity
-
-
-class ClothingItem(BaseItem):
-
-  CLOTHING_CATEGORIES = {
-    "tops"    : {"T-shirt","Tunic","Tank Top","Blouse","Camisole","Flannel Shirt","Polo Shirt","Hoodie","Sweater","Cardigan"},
-    "bottoms" : {"Jeans","Trousers","Leggings","Shorts","Skirt","Pants","Overalls"},
-    "dresses" : {"Dress","Romper","Jumpsuit","Onesie","Kimono","Pajamas"},
-    "outerwear": {"Jacket","Coat","Trench Coat","Raincoat","Blazer","Vest","Poncho"},
-    "footwear": {"Boots","Loafers","Slippers","Flip-Flops","Sneakers","Sandals"},
-    "accessories": {"Handbag","Wallet","Belt","Scarf","Gloves","Bowtie","Tie","Hat","Sun Hat","Sunglasses","Umbrella","Backpack","Socks"},
-    "swimwear": {"Swimsuit"},
-    }
-
-  def category(self):
-    for cat, items in self.CLOTHING_CATEGORIES.items():
-      if self._name in items:
-        return cat.title()
-    return "Other"
-
-  def summary(self):
-    return (f"{self._name} ({self.category()}) — "
-            f"${self._price:.2f} x {self._quantity} units "
-            f"= ${self.stock_value():,.2f} total value")
-
-class PremiumItem(ClothingItem):
-  SURCHARGE_RATE = 0.15
-  def __init__(self, item_id, name, price, quantity, brand = "N/A"):
-    super().__init__(item_id, name, price, quantity)
-    self._brand = brand
-  @property
-  def brand(self): 
-    return self._brand
-
-  def category(self):
-    return "Premium " + super().category()
-
-  def summary(self):
-    surcharge = self._price * self.SURCHARGE_RATE
-    return (f"[PREMIUM] {self._brand} {self._name} — "
-            f"${self._price:.2f} + ${surcharge:.2f} surcharge, "
-            f"Qty: {self._quantity}")
-
-  def final_price(self):
-    return self._price * (1 + self.SURCHARGE_RATE)
+        print(f"Error has occured!")
 
 class Inventory:
   def __init__(self):
-    self._items: dict[str, BaseItem] = {}
-    self._low_stock_ids: set = set()
+    self._items = {}
+    self._low_stock_ids = set()
 
   def __len__(self):
     return len(self._items)
@@ -140,7 +35,7 @@ class Inventory:
   def __iter__(self):
     return iter(self._items.values())
 
-  def __add__(self, other: "Inventory"):
+  def __add__(self, other):
     merged = Inventory()
     for item in self:
       merged.add_item(item)
@@ -148,6 +43,7 @@ class Inventory:
       if item.item_id not in merged:
         merged.add_item(item)
     return merged
+
   def add_item(self, item):
     try:
       if item.item_id in self._items:
@@ -156,7 +52,7 @@ class Inventory:
       self._check_low_stock(item)
       log_event("ADD", f"Added {item.name} (ID={item.item_id})")
     except ValueError as e:
-        print(f"[ADD ERROR] {e}")
+        print(f"Adding Error! {e}")
 
   def remove_item(self, item_id):
     try:
@@ -164,7 +60,7 @@ class Inventory:
       self._low_stock_ids.discard(item_id)
       log_event("REMOVE", f"Removed {item.name} (ID={item_id})")
     except KeyError:
-      print(f"[REMOVE ERROR] Item ID '{item_id}' not found.")
+      print(f"Remove Error! Item ID '{item_id}' not found.")
 
   def update_quantity(self, item_id, addon):
    try:
@@ -175,45 +71,43 @@ class Inventory:
       return
     item.quantity = new_qty
     self._check_low_stock(item)
-    log_event("UPDATE_QTY",f"{item.name} qty changed by {addon:+d} → {new_qty}")
+    log_event("UPDATE_QTY",f"{item.name} qty changed to {new_qty}")
    except KeyError:
-    print(f"[UPDATE ERROR] Item ID '{item_id}' not found.")
+    print(f"Update error! Item ID {item_id} not found.")
    except ValueError as e:
-    print(f"[UPDATE ERROR] {e}")
+    print(f"Update Error! {e}")
 
   def get_item(self, item_id):
-        try:
-            return self._items[item_id]
-        except KeyError:
-            print(f"Item was not found")
-            return None
+    try:
+      return self._items[item_id]
+    except KeyError:
+      print(f"Item was not found")
+      return
 
-  def _check_low_stock(self, item: BaseItem):
-        if item.quantity <= LOW_STOCK_THRESHOLD:
-            self._low_stock_ids.add(item.item_id)
-        else:
-            self._low_stock_ids.discard(item.item_id)
+  def _check_low_stock(self, item):
+    if item.quantity <= LOW_STOCK_THRESHOLD:
+      self._low_stock_ids.add(item.item_id)
+    else:
+      self._low_stock_ids.discard(item.item_id)
 
-  def low_stock_report(self) -> list[BaseItem]:
-        return [self._items[i] for i in self._low_stock_ids
-                if i in self._items]
+  def low_stock_report(self):
+    return [self._items[i] for i in self._low_stock_ids if i in self._items]
 
   def save_to_csv(self, filepath = INVENTORY_FILE):
-        try:
-            with open(filepath, "w", newline="", encoding="utf-8") as f:
-                writer = csv.writer(f)
-                writer.writerow(["item_id","name","price","quantity","type","brand"])
-                for item in self:
-                    t = "premium" if isinstance(item, PremiumItem) else "standard"
-                    brand = item.brand if isinstance(item, PremiumItem) else ""
-                    writer.writerow([item.item_id, item.name, item.price,
-                                     item.quantity, t, brand])
+    try:
+      with open(filepath, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["item_id","name","price","quantity","type","brand"])
+        for item in self:
+            t = "premium" if isinstance(item, PremiumItem) else "standard"
+            brand = item.brand if isinstance(item, PremiumItem) else "" 
+            writer.writerow([item.item_id, item.name, item.price,item.quantity, t, brand])
             log_event("SAVE", f"Inventory saved to {filepath}")
             print(f"Inventory is saved to {filepath}")
-        except IOError:
-            print(f"There was an error")
+    except IOError:
+      print(f"There was an error")
 
-  def load_from_csv(self, filepath: str = INVENTORY_FILE):
+  def load_from_csv(self, filepath = INVENTORY_FILE):
     try:
       with open(filepath, newline="", encoding="utf-8") as f:
         for row in csv.DictReader(f):
@@ -230,7 +124,7 @@ class Inventory:
           except (ValueError, KeyError) as e:
                 print(f"No value detected. Skipping row {e}")
       log_event("LOAD", f"Inventory loaded from {filepath}")
-      print(f"[LOAD] Inventory loaded from '{filepath}'.")
+      print(f"Success! Inventory loaded from {filepath}.")
     except FileNotFoundError:
       print(f"{filepath} Not found!")
 
@@ -243,12 +137,12 @@ class Inventory:
 
 class SalesTransaction:
   def __init__(self, transaction_id, item_name, amount, date ,payment_method , rating: float | None = None):
-    self._transaction_id  = transaction_id
-    self._item_name       = item_name
-    self._amount          = amount
-    self._date            = date
-    self._payment_method  = payment_method
-    self._rating          = rating
+    self._transaction_id = transaction_id
+    self._item_name = item_name
+    self._amount = amount
+    self._date = date
+    self._payment_method = payment_method
+    self._rating = rating
 
   @property
   def transaction_id(self): 
@@ -313,6 +207,23 @@ if __name__ == "__main__":
   print(f"Inventory 2 size: {len(inventory2)} items")
 
   #Display test
-  print("\n👕 TEST 4: Display All Items")
+  print("\nDisplay All Items")
   inventory.display_all()
   inventory2.display_all()
+
+  # Test magic method
+  print("\n--- Testing Magic Methods ---")
+  print(f"Length of inventory: {len(inventory)}")  # __len__
+  print(f"Is 'C001' in inventory? {'C001' in inventory}")  # __contains__
+  print(f"Is 'A001' in inventory? {'A001' in inventory}")  # __contains__
+  print("\nIterating through inventory (should show all items):")
+  for item in inventory:  # __iter__
+    print(f"  - {item.item_id}: {item.name}")
+
+  item = inventory.get_item("C001")
+  print(f"Got item: {item}")
+  item = inventory.get_item("INVALID")
+  print(f"Got invalid item: {item}")
+  
+  #update_quantity
+  
