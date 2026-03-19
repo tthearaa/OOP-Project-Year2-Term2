@@ -1,25 +1,14 @@
 import os
 import csv
-from ClothingItemClass import BaseItem,ClothingItem,PremiumItem
+from ClothingItemClass import ClothingItem,PremiumItem
 from datetime import datetime
+from Utilites.Util_Log import log_event
 
 #Constants
-DATASET_PATH   = "Data/Fashion_Retail_Sales.csv"
+DATASET_PATH = "Data/Fashion_Retail_Sales.csv"
 INVENTORY_FILE = "Data/inventory.csv"
-LOG_FILE       = "Data/event_log.csv"
+LOG_FILE = "Data/event_log.csv"
 LOW_STOCK_THRESHOLD = 5
-
-# Utility function
-def log_event(action , detail):
-    try:
-      file_exists = os.path.isfile(LOG_FILE)
-      with open(LOG_FILE, "a", newline="") as f:
-        writer = csv.writer(f)
-        if not file_exists:
-          writer.writerow(["timestamp", "action", "detail"])
-        writer.writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"),action, detail])
-    except IOError as e:
-        print(f"Error has occured!")
 
 class Inventory:
   def __init__(self):
@@ -60,7 +49,7 @@ class Inventory:
       self._low_stock_ids.discard(item_id)
       log_event("REMOVE", f"Removed {item.name} (ID={item_id})")
     except KeyError:
-      print(f"Remove Error! Item ID '{item_id}' not found.")
+      print(f"Remove Error! Item ID {item_id} not found.")
 
   def update_quantity(self, item_id, addon):
    try:
@@ -95,21 +84,21 @@ class Inventory:
 
   def save_to_csv(self, filepath = INVENTORY_FILE):
     try:
-      with open(filepath, "w", newline="", encoding="utf-8") as f:
+      with open(filepath, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["item_id","name","price","quantity","type","brand"])
         for item in self:
-            t = "premium" if isinstance(item, PremiumItem) else "standard"
-            brand = item.brand if isinstance(item, PremiumItem) else "" 
-            writer.writerow([item.item_id, item.name, item.price,item.quantity, t, brand])
-            log_event("SAVE", f"Inventory saved to {filepath}")
-            print(f"Inventory is saved to {filepath}")
+          t = "premium" if isinstance(item, PremiumItem) else "standard"
+          brand = item.brand if isinstance(item, PremiumItem) else "" 
+          writer.writerow([item.item_id, item.name, item.price, item.quantity, t, brand])
+        log_event("SAVE", f"Inventory saved to {filepath}")
+        print(f"Inventory saved to {filepath}")
     except IOError:
       print(f"There was an error")
 
   def load_from_csv(self, filepath = INVENTORY_FILE):
     try:
-      with open(filepath, newline="", encoding="utf-8") as f:
+      with open(filepath, newline="") as f:
         for row in csv.DictReader(f):
           try:
             iid  = row["item_id"]
@@ -120,7 +109,7 @@ class Inventory:
               item = PremiumItem(iid, name, price, qty, brand=row.get("brand",""))
             else:
               item = ClothingItem(iid, name, price, qty)
-              self.add_item(item)
+            self.add_item(item)
           except (ValueError, KeyError) as e:
                 print(f"No value detected. Skipping row {e}")
       log_event("LOAD", f"Inventory loaded from {filepath}")
@@ -178,11 +167,11 @@ if __name__ == "__main__":
   premium_jeans = PremiumItem("P002", "Jeans", 199.99, 5, "Armani")
 
   #Check the category function
-  print(f"Shirt category: {shirt.category()}")  # Should be "Tops"
-  print(f"Jeans category: {jeans.category()}")  # Should be "Bottoms"
-  print(f"Jacket category: {jacket.category()}")  # Should be "Outerwear"
-  print(f"Hat category: {hat.category()}")  # Should be "Other" (not in dictionary)
-  print(f"Premium shirt category: {premium_shirt.category()}")  # Should be "Premium Tops"
+  print(f"Shirt category: {shirt.category()}")
+  print(f"Jeans category: {jeans.category()}")
+  print(f"Jacket category: {jacket.category()}")
+  print(f"Hat category: {hat.category()}")
+  print(f"Premium shirt category: {premium_shirt.category()}")
 
   #Check summary
   print(f"\nShirt summary: {shirt.summary()}")
@@ -216,7 +205,7 @@ if __name__ == "__main__":
   print(f"Length of inventory: {len(inventory)}")  # __len__
   print(f"Is 'C001' in inventory? {'C001' in inventory}")  # __contains__
   print(f"Is 'A001' in inventory? {'A001' in inventory}")  # __contains__
-  print("\nIterating through inventory (should show all items):")
+  print("\nIterating through inventory:")
   for item in inventory:  # __iter__
     print(f"  - {item.item_id}: {item.name}")
 
