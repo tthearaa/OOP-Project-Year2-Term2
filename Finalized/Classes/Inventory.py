@@ -1,7 +1,5 @@
-import os
 import csv
-from ClothingItemClass import ClothingItem,PremiumItem
-from datetime import datetime
+from Classes.ClothingItemClass import PremiumItem, ClothingItem
 from Utilites.Util_Log import log_event
 
 #Constants

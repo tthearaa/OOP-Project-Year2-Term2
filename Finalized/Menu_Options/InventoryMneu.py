@@ -1,5 +1,5 @@
 from Utilites.MenuCRUD import menu_add_item,menu_low_stock,menu_remove_item,menu_save_load,menu_update_quantity,menu_view_inventory
-from Utilites.Display import _banner, _section, _pause
+from Utilites.Display import _section, _pause
 
 def inventory_menu(inventory):
     options = {

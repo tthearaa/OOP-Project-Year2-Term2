@@ -1,6 +1,6 @@
 import os
 import csv
-import datetime
+from datetime import datetime
 
 #----------------------------------------------------------------------#
 

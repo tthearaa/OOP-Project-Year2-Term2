@@ -1,5 +1,5 @@
 from Utilites.Display import _section, _pause
-from Finalized.Classes.SalesAnalysis import SalesAnalysis, process_sale
+from Classes.SalesAnalysis import SalesAnalysis, process_sale
 
 def menu_record_sale(inventory):
     _section("RECORD SALE")

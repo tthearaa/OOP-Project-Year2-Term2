@@ -1,6 +1,6 @@
 import getpass
-from Utilites.Auth import default_admin, login, register_user, change_password
 from Classes.Inventory import Inventory
+from Utilites.Auth import default_admin, register_user, change_password
 from Utilites.Display import _banner, _pause
 from Menu_Options.Authentication_Menu import auth_menu
 from Menu_Options.InventoryMneu import inventory_menu

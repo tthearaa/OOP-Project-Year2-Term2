@@ -48,18 +48,18 @@ def register_user(username: str, password: str) -> bool:
 
     users[username] = password
     _save_users(users)
-    _log_auth("REGISTER", username)
+    _log_auth("REGISTER", username, "success")
     print(f"  Admin '{username}' registered successfully.")
     return True
 
 def login(username, password):
     users = _load_users()
     if username not in users or users[username] != password:
-        _log_auth("LOGIN_FAIL", username)
+        _log_auth("LOGIN_FAIL", username, "invalid credentials")
         print("  Invalid username or password.")
         return None
 
-    _log_auth("LOGIN_OK", username)
+    _log_auth("LOGIN_OK", username, "success")
     print(f"  Welcome, {username}!")
     return {"username": username, "role": "admin"}
 

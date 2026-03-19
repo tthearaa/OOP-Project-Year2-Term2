@@ -1,5 +1,5 @@
 import getpass
-from Finalized.Utilites.Auth import default_admin, login, register_user, change_password
+from Utilites.Auth import login, register_user
 from Utilites.Display import _banner
 
 def auth_menu():
