@@ -19,7 +19,7 @@ def main():
         return
 
     while True:
-        #show header 👗  ARV Studios INVENTORY & SALES SYSTEM  👗
+        #show header  ARV Studios INVENTORY & SALES SYSTEM  
         _banner()
         #get admin username from login(username, password) inside session
         print(f"  Logged in as: {session['username']}  [admin]")

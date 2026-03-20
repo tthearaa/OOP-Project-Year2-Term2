@@ -24,7 +24,7 @@ def menu_remove_item(inventory):
     _section("REMOVE ITEM")
     item_id = input("  Item ID to remove: ").strip()
     inventory.remove_item(item_id)
-
+#this function will update the amount of the items that we have based on id
 def menu_update_quantity(inventory):
     _section("UPDATE QUANTITY")
     item_id = input("  Item ID              : ").strip()
@@ -34,7 +34,7 @@ def menu_update_quantity(inventory):
         print("  Invalid number.")
         return
     inventory.update_quantity(item_id, amount)
-
+#view all the items we added 
 def menu_view_inventory(inventory):
     _section("ALL INVENTORY ITEMS")
     inventory.display_all() #if the inventory is empty then display notification (Inventory is Empty!)
