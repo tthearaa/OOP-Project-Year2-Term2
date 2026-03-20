@@ -7,17 +7,17 @@ DATASET_PATH = "Data/Fashion_Retail_Sales.csv"
 INVENTORY_FILE = "Data/inventory.csv"
 LOG_FILE = "Data/event_log.csv"
 LOW_STOCK_THRESHOLD = 5
-
+#In this we will perform CRUD operation for items in the inventory 
 class Inventory:
   def __init__(self):
     self._items = {}
     self._low_stock_ids = set()
 
   def __len__(self):
-    return len(self._items)
+    return len(self._items) #get the amount of the items that we have in stock 
   
   def __contains__(self, item_id):
-    return item_id in self._items
+    return item_id in self._items 
     
   def __iter__(self):
     return iter(self._items.values())
@@ -40,29 +40,30 @@ class Inventory:
       log_event("ADD", f"Added {item.name} (ID={item.item_id})")
     except ValueError as e:
         print(f"Adding Error! {e}")
-
+#This function will remove item by chekcing with id if the id doesn't exist then it will print error
   def remove_item(self, item_id):
     try:
-      item = self._items.pop(item_id)
+      item = self._items.pop(item_id) #this will remove one row from inventory
       self._low_stock_ids.discard(item_id)
       log_event("REMOVE", f"Removed {item.name} (ID={item_id})")
     except KeyError:
       print(f"Remove Error! Item ID {item_id} not found.")
 
+#This function will update the quantity of the item in the inventory 
   def update_quantity(self, item_id, addon):
    try:
-    item = self._items[item_id]
+    item = self._items[item_id] 
     new_qty = item.quantity + addon
-    if new_qty < 0:
+    if new_qty < 0: #check if the new amount is wrong (can't be negative)
       print("Quantity needs to be positive!")
       return
-    item.quantity = new_qty
-    self._check_low_stock(item)
-    log_event("UPDATE_QTY",f"{item.name} qty changed to {new_qty}")
+    item.quantity = new_qty #update the new amount
+    self._check_low_stock(item) #check if the stock is low 
+    log_event("UPDATE_QTY",f"{item.name} qty changed to {new_qty}") #after update done
    except KeyError:
-    print(f"Update error! Item ID {item_id} not found.")
+    print(f"Update error! Item ID {item_id} not found.") #enter the wrong/non-exist id
    except ValueError as e:
-    print(f"Update Error! {e}")
+    print(f"Update Error! {e}") #show the error
 
   def get_item(self, item_id):
     try:
@@ -70,16 +71,16 @@ class Inventory:
     except KeyError:
       print(f"Item was not found")
       return
-
+#this will check if the stock is low by comparing with LOW_STOCK_THRESHOLD = 5
   def _check_low_stock(self, item):
-    if item.quantity <= LOW_STOCK_THRESHOLD:
+    if item.quantity <= LOW_STOCK_THRESHOLD: #if it's less then add to low stock report
       self._low_stock_ids.add(item.item_id)
     else:
-      self._low_stock_ids.discard(item.item_id)
-
+      self._low_stock_ids.discard(item.item_id) #if no then remove it from low stock report
+#this will return the items that are currently low in stock
   def low_stock_report(self):
     return [self._items[i] for i in self._low_stock_ids if i in self._items]
-
+#save file to csv 
   def save_to_csv(self, filepath = INVENTORY_FILE):
     try:
       with open(filepath, "w", newline="") as f:
@@ -93,7 +94,7 @@ class Inventory:
         print(f"Inventory saved to {filepath}")
     except IOError:
       print(f"There was an error")
-
+#load data from csv 
   def load_from_csv(self, filepath = INVENTORY_FILE):
     try:
       with open(filepath, newline="") as f:
@@ -114,7 +115,7 @@ class Inventory:
       print(f"Success! Inventory loaded from {filepath}.")
     except FileNotFoundError:
       print(f"{filepath} Not found!")
-
+#check if the inventory is empty or not then display
   def display_all(self):
     if not self._items:
       print("Inventory is Empty!")

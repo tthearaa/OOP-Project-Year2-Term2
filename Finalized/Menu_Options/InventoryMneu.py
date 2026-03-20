@@ -13,13 +13,14 @@ def inventory_menu(inventory):
     while True:
         _section("INVENTORY MENU")
         for k, (label, _) in options.items():
-            print(f"  {k}. {label}")
+            print(f"  {k}. {label}") #this just print out the menu and add '.' after each number so it looks clean
         print("  0. Back")
         choice = input("\n  Choice: ").strip()
         if choice == "0":
             break
-        elif choice in options:
-            options[choice][1](inventory)
+        #if the choice is in the option then run and pass the inventory into the fucntion
+        elif choice in options: 
+            options[choice][1](inventory) 
             _pause()
         else:
             print("  Invalid option.")

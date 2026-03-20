@@ -5,16 +5,20 @@ from datetime import datetime
 USERS_FILE = "Data/users.csv"
 AUTH_LOG   = "Data/auth_log.csv"
 
+#this will update the login report/record 
 def _log_auth(action, username, detail):
     try:
+        #this will check if the file exists
         exists = os.path.isfile(AUTH_LOG)
-        with open(AUTH_LOG, "a", newline="") as f:
-            w = csv.writer(f)
-            if not exists:
+        with open(AUTH_LOG, "a", newline="") as f: #open Data/auth_log.csv then append the new line
+            w = csv.writer(f) 
+
+            if not exists: #this just check if we haven't create the file before, it just rewrite the header
                 w.writerow(["timestamp", "action", "username", "detail"])
+            #write the report of what just happened 
             w.writerow([datetime.now().strftime("%Y-%m-%d %H:%M:%S"), action, username, detail])
     except IOError:
-        pass
+        pass #ignore if error
 
 def _load_users():
     users = {}
@@ -35,30 +39,31 @@ def _save_users(users: dict):
         w.writerow(["username", "password"])
         for uname, password in users.items():
             w.writerow([uname, password])
-
+#for this function both username and password has to be a string and the return type is bool (True/False)
 def register_user(username: str, password: str) -> bool:
     if len(password) < 6:
         print("  Password must be at least 6 characters.")
         return False
-
+    #bring the existing username (if have any) to see if the name has already taken 
     users = _load_users()
     if username in users:
         print(f"  Username '{username}' is already taken.")
         return False
-
+    #if the password is secured and the name is new then we can put the new username and password into the new dictionary 
     users[username] = password
     _save_users(users)
     _log_auth("REGISTER", username, "success")
     print(f"  Admin '{username}' registered successfully.")
     return True
-
+#this will check if user enter the right username/password
 def login(username, password):
     users = _load_users()
     if username not in users or users[username] != password:
+        #if the inputs are incorrect then update the log in run _log_auth()
         _log_auth("LOGIN_FAIL", username, "invalid credentials")
         print("  Invalid username or password.")
         return None
-
+    #if the inputs are correct then update the log in run _log_auth()
     _log_auth("LOGIN_OK", username, "success")
     print(f"  Welcome, {username}!")
     return {"username": username, "role": "admin"}
