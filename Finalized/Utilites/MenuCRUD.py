@@ -60,3 +60,6 @@ def menu_save_load(inventory):
         inventory.load_from_csv()
     else:
         print("  Invalid option.")
+
+if __name__ == "__main__":
+    pass

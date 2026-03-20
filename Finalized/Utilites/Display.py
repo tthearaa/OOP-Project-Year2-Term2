@@ -8,3 +8,9 @@ def _section(title):
 
 def _pause():
     input("\n  [Press Enter to continue]")
+
+if __name__ == "__main__":
+    _banner()
+    _section("Hello")
+    _pause()
+    _section("Pneumonou")

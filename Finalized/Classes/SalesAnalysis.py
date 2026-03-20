@@ -5,54 +5,50 @@ from Utilites.Util_Log import log_sale, SALES_LOG_FILE
 #Constants
 DATASET_PATH   = "Data/Fashion_Retail_Sales.csv"
 
-
-def process_sale(inventory, item_id, qty, payment_method: str = "Cash", rating: float | None = None):
+transcation_counter = 0
+def process_sale(inventory, item_id, qty, payment_method = "Cash", rating: float | None = None):
     item = inventory.get_item(item_id)
+    global transcation_counter
     if item is None:
         print(f"  Sale failed: item '{item_id}' not found in inventory.")
         return False
     if item.quantity < qty:
-        print(f"  Sale failed: only {item.quantity} units of '{item.name}' in stock "
-              f"(requested {qty}).")
+        print(f" Sale Failed, There is only {item.quantity} in stock! (requested {qty}).")
         return False
-    revenue     = item.price * qty
-    date_str    = datetime.now().strftime("%Y-%m-%d")
-    txn_id      = f"TXN-{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    revenue = item.price * qty
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    transcation_counter+= 1
+    t_id = f"TID-{transcation_counter:04d}"
     inventory.update_quantity(item_id, -qty)
-    log_sale(txn_id, item.name, revenue, date_str,
+    log_sale(t_id, item.name, revenue, date_str,
              payment_method, rating, qty)
-    print(f"  Sale recorded: {qty}x '{item.name}' for ${revenue:,.2f}  [{txn_id}]")
+    print(f"  Sale recorded: {qty} x {item.name} for ${revenue:.2f}  [{t_id}]")
     if item.quantity == 0:
-        print(f"  ⚠  '{item.name}' is now OUT OF STOCK.")
+        print(f" ⚠️ {item.name} is now OUT OF STOCK.")
     return True
-
-# ── SalesAnalysis class ────────────────────────────────────────────────────────
 
 class SalesAnalysis:
  
-    COL_CUSTOMER   = "Customer Reference ID"
-    COL_ITEM       = "Item Purchased"
-    COL_AMOUNT     = "Purchase Amount (USD)"
-    COL_DATE       = "Date Purchase"
-    COL_PAYMENT    = "Payment Method"
-    COL_RATING     = "Review Rating"
+    COL_CUSTOMER = "Customer Reference ID"
+    COL_ITEM = "Item Purchased"
+    COL_AMOUNT = "Purchase Amount (USD)"
+    COL_DATE = "Date Purchase"
+    COL_PAYMENT = "Payment Method"
+    COL_RATING = "Review Rating"
 
     def __init__(self, filepath: str = DATASET_PATH):
         self._filepath = filepath
         self._df: pd.DataFrame = pd.DataFrame()
         self._loaded = False
 
-    # ── loading ────────────────────────────────────────────────────────────────
-
-    def load(self) -> bool:
-        """Load and clean the CSV. Returns True on success."""
+    def load(self):
         if not os.path.isfile(self._filepath):
             print(f"  Dataset not found: {self._filepath}")
             return False
         try:
             df = pd.read_csv(self._filepath)
 
-            # Normalise column names (strip extra spaces)
+            #Best Practice, normalise and cleaning out any extra spaces
             df.columns = df.columns.str.strip()
 
             # Parse date column if present
@@ -74,15 +70,12 @@ class SalesAnalysis:
             print(f"  Failed to load dataset: {e}")
             return False
 
-    def _check_loaded(self) -> bool:
+    def _check_loaded(self):
         if not self._loaded:
             print("  No data loaded. Call .load() first.")
         return self._loaded
-
-    # ── overall summary ────────────────────────────────────────────────────────
-
+    
     def summary(self):
-        """Print high-level statistics."""
         if not self._check_loaded():
             return
         df = self._df
@@ -101,6 +94,7 @@ class SalesAnalysis:
         print(f"  Transactions : {num_txn:,}")
         print(f"  Total revenue: ${total_rev:,.2f}")
         print(f"  Avg per sale : ${avg_rev:,.2f}")
+
         if date_range:
             print(date_range, end="")
         if self.COL_RATING in df.columns:
@@ -108,10 +102,7 @@ class SalesAnalysis:
             print(f"  Avg rating   : {avg_r:.2f} ⭐")
         print("═" * 48 + "\n")
 
-    # ── top sellers ───────────────────────────────────────────────────────────
-
-    def top_items_by_revenue(self, n: int = 10):
-        """Show the n best-selling items by total revenue."""
+    def top_items_by_revenue(self, n = 10):
         if not self._check_loaded():
             return
         if self.COL_ITEM not in self._df.columns:
@@ -130,8 +121,7 @@ class SalesAnalysis:
                   f"   ({row['transactions']} txns)")
         print()
 
-    def top_items_by_frequency(self, n: int = 10):
-        """Show the n most frequently purchased items."""
+    def top_items_by_frequency(self, n = 10):
         if not self._check_loaded():
             return
         if self.COL_ITEM not in self._df.columns:
@@ -147,7 +137,6 @@ class SalesAnalysis:
         print()
 
     def payment_breakdown(self):
-        """Revenue and count split by payment method."""
         if not self._check_loaded():
             return
         if self.COL_PAYMENT not in self._df.columns:
@@ -167,10 +156,7 @@ class SalesAnalysis:
                   f"{row['count']:>5} txns  ({pct:.1f}%)")
         print()
 
-    # ── rating analysis ────────────────────────────────────────────────────────
-
     def rating_analysis(self):
-        """Distribution and per-item average rating."""
         if not self._check_loaded():
             return
         if self.COL_RATING not in self._df.columns:
@@ -197,10 +183,7 @@ class SalesAnalysis:
                 print(f"  {item:<25}  {avg:.2f} ⭐")
         print()
 
-    # ── monthly trend ─────────────────────────────────────────────────────────
-
     def monthly_revenue(self):
-        """Print monthly revenue totals."""
         if not self._check_loaded():
             return
         if self.COL_DATE not in self._df.columns:
@@ -220,14 +203,6 @@ class SalesAnalysis:
             bar = "█" * int((rev / max_val) * 30)
             print(f"  {str(period):<10}  {bar:<30}  ${rev:,.2f}")
         print()
-
-    # ── sales log analysis ────────────────────────────────────────────────────
-
-    def load_sales_log(self) -> bool:
-        """Switch to live sales_log.csv instead of the dataset."""
-        return self.load.__func__(
-            SalesAnalysis(SALES_LOG_FILE), # create temp obj to reuse load logic
-        ) if False else self._load_log()
 
     def _load_log(self):
         try:
@@ -254,7 +229,7 @@ class SalesAnalysis:
             print(f"  Failed to load sales log: {e}")
             return False
 
-    def export_summary_csv(self, out_path: str = "Data/analysis_summary.csv"):
+    def export_summary_csv(self, out_path = "Data/analysis_summary.csv"):
         if not self._check_loaded():
             return
         if self.COL_ITEM not in self._df.columns:

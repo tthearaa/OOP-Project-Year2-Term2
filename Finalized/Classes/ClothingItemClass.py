@@ -99,3 +99,14 @@ class PremiumItem(ClothingItem):
 
   def final_price(self):
     return self._price * (1 + self.PREMIUMEXTRA)
+  
+if __name__ == "__main__":
+  #Object Instaniation
+  C1 =  ClothingItem("C01", "Shirt", 10, 10)
+  #Getter Method Testing
+  print(C1._item_id)
+  print(C1._name)
+  print(f"${C1._price}")
+  print(C1._quantity, "items")
+  #Test __str__
+  print(C1)
