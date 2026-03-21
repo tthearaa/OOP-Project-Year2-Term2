@@ -94,11 +94,15 @@ class Inventory:
         print(f"Inventory saved to {filepath}")
     except IOError:
       print(f"There was an error")
+<<<<<<< HEAD
 #load data from csv 
+=======
+#this will read data from csv then load item into inventory
+>>>>>>> 2c3db8437632672b1eeef86f7aaf2483ee360f21
   def load_from_csv(self, filepath = INVENTORY_FILE):
     try:
       with open(filepath, newline="") as f:
-        for row in csv.DictReader(f):
+        for row in csv.DictReader(f): #converts each row into a dictionary
           try:
             iid  = row["item_id"]
             name = row["name"]
@@ -108,7 +112,8 @@ class Inventory:
               item = PremiumItem(iid, name, price, qty, brand=row.get("brand",""))
             else:
               item = ClothingItem(iid, name, price, qty)
-            self.add_item(item)
+            if iid not in self._items: #skip the duplicates
+              self.add_item(item)
           except (ValueError, KeyError) as e:
                 print(f"No value detected. Skipping row {e}")
       log_event("LOAD", f"Inventory loaded from {filepath}")

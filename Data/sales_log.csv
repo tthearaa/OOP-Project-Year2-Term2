@@ -1,0 +1,3 @@
+transaction_id,item_name,amount,date,payment_method,rating,qty_sold
+TID-0001,Boxy Shirt,14.00,2026-03-21,cash,5.0,2
+TID-0001,Boxy Shirt,7.00,2026-03-21,PayPal,5.0,1

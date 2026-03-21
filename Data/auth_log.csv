@@ -12,5 +12,13 @@ timestamp,action,username,detail
 2026-03-20 22:47:20,LOGIN_FAIL,admin,invalid credentials
 2026-03-20 23:00:47,LOGIN_OK,admin,success
 2026-03-20 23:34:06,LOGIN_OK,admin,success
+<<<<<<< HEAD
 2026-03-21 03:34:12,LOGIN_OK,admin,success
 2026-03-21 14:06:18,LOGIN_OK,admin,success
+=======
+2026-03-21 03:09:01,LOGIN_OK,admin,success
+2026-03-21 03:50:19,LOGIN_OK,admin,success
+2026-03-21 04:03:54,LOGIN_OK,admin,success
+2026-03-21 04:05:59,LOGIN_OK,admin,success
+2026-03-21 04:11:39,LOGIN_OK,admin,success
+>>>>>>> 2c3db8437632672b1eeef86f7aaf2483ee360f21

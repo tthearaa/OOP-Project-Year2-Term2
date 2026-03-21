@@ -1,7 +1,7 @@
 #Header for the menu
 def _banner():
     print("\n" + "═" * 52)
-    print("   👗  ARV Studios INVENTORY & SALES SYSTEM  👗")
+    print("  ARV Studios INVENTORY & SALES SYSTEM  ")
     print("═" * 52)
 
 def _section(title):

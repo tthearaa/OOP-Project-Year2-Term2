@@ -1,5 +1,8 @@
 item_id,name,price,quantity,type,brand
 001,Boxy Shirt,7.0,5,premium,ARV
+<<<<<<< HEAD
 002,Pants,8.0,100,standard,
 003,Jacket,11.5,100,premium,Gucci
 004,Hoodie,11.5,100,standard,
+=======
+>>>>>>> 2c3db8437632672b1eeef86f7aaf2483ee360f21
