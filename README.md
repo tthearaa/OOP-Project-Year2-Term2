@@ -52,7 +52,7 @@ Project/
 
 Install dependencies:
 ```
-pip install pandas matplotlib
+pip install pandas matplotlib maskpass
 ```
 
 ---

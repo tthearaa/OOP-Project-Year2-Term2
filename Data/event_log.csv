@@ -27,3 +27,29 @@ timestamp,action,detail
 2026-03-17 13:15:53,LOAD,Inventory loaded from Data/inventory.csv
 2026-03-19 14:09:08,LOAD,Inventory loaded from Data/inventory.csv
 2026-03-19 15:14:08,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-20 22:43:16,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-20 22:43:41,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-20 22:50:23,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-20 22:52:58,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-20 22:54:37,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-20 22:54:41,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-20 23:00:40,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-20 23:09:04,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-21 00:23:58,ADD,Added Boxy Shirt (ID=001)
+2026-03-21 00:33:58,UPDATE_QTY,Boxy Shirt qty changed to 30
+2026-03-21 00:40:17,UPDATE_QTY,Boxy Shirt qty changed to 33
+2026-03-21 00:40:48,UPDATE_QTY,Boxy Shirt qty changed to 30
+2026-03-21 02:02:56,UPDATE_QTY,Boxy Shirt qty changed to 5
+2026-03-21 02:08:21,SAVE,Inventory saved to Data/inventory.csv
+2026-03-21 02:08:44,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-21 03:34:04,ADD,Added Boxy Shirt (ID=001)
+2026-03-21 03:34:04,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-21 03:56:32,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-21 14:06:11,ADD,Added Boxy Shirt (ID=001)
+2026-03-21 14:06:11,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-21 14:06:36,ADD,Added Pants (ID=002)
+2026-03-21 14:07:03,ADD,Added Jacket (ID=003)
+2026-03-21 14:07:34,ADD,Added Hoodie (ID=004)
+2026-03-21 14:08:03,LOAD,Inventory loaded from Data/inventory.csv
+2026-03-21 14:08:09,SAVE,Inventory saved to Data/inventory.csv
+2026-03-21 14:08:37,ADD,Added Swimsuit (ID=005)

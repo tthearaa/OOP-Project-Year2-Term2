@@ -5,8 +5,9 @@ from Utilites.Display import _banner, _pause
 from Menu_Options.Authentication_Menu import auth_menu
 from Menu_Options.InventoryMneu import inventory_menu
 from Menu_Options.SalesAnalysisMenu import sales_menu
-
+import maskpass
 def main():
+    
     default_admin()
 
     inventory = Inventory()
@@ -18,7 +19,9 @@ def main():
         return
 
     while True:
+        #show header 👗  ARV Studios INVENTORY & SALES SYSTEM  👗
         _banner()
+        #get admin username from login(username, password) inside session
         print(f"  Logged in as: {session['username']}  [admin]")
         print()
         print("  1. Inventory management")
@@ -33,12 +36,13 @@ def main():
         elif choice == "2": sales_menu(inventory)
         elif choice == "3":
             username = input("  New username : ").strip()
-            password = getpass.getpass("  Password     : ")
+            password = maskpass.askpass(prompt="  Password     : ", mask="*")
+            #update new admin's username and password into users.csv
             register_user(username, password)
             _pause()
         elif choice == "4":
-            old = getpass.getpass("  Current password : ")
-            new = getpass.getpass("  New password     : ")
+            old = maskpass.askpass(prompt="  Current password : ", mask="*")
+            new = maskpass.askpass(prompt="  New password     : ", mask="*")
             change_password(session["username"], old, new)
             _pause()
         elif choice == "0":

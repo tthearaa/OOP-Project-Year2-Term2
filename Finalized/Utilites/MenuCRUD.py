@@ -1,6 +1,6 @@
 from Classes.ClothingItemClass import ClothingItem, PremiumItem
 from Utilites.Display import _banner, _section
-
+#This function will add new item into inventory.csv
 def menu_add_item(inventory):
     _section("ADD ITEM")
     item_id = input("  Item ID          : ").strip()
@@ -11,6 +11,7 @@ def menu_add_item(inventory):
     except ValueError:
         print("  Invalid price or quantity.")
         return
+    #check if the item is the premium type or normal type
     is_premium = input("  Premium item? (y/n): ").strip().lower() == "y"
     if is_premium:
         brand = input("  Brand            : ").strip()
@@ -18,7 +19,7 @@ def menu_add_item(inventory):
     else:
         item = ClothingItem(item_id, name, price, quantity)
     inventory.add_item(item)
-
+#This function will remove item from the inventory by taking item's id
 def menu_remove_item(inventory):
     _section("REMOVE ITEM")
     item_id = input("  Item ID to remove: ").strip()
@@ -36,19 +37,19 @@ def menu_update_quantity(inventory):
 
 def menu_view_inventory(inventory):
     _section("ALL INVENTORY ITEMS")
-    inventory.display_all()
+    inventory.display_all() #if the inventory is empty then display notification (Inventory is Empty!)
     print(f"\n  Total items in inventory: {len(inventory)}")
-
+#this will show the low stock report 
 def menu_low_stock(inventory):
     _section("LOW STOCK REPORT")
-    low = inventory.low_stock_report()
-    if not low:
+    low = inventory.low_stock_report() #bring the low stock items in
+    if not low: #see if there's no low stock report it return nothing
         print("  No items below the low-stock threshold.")
-    else:
+    else: #is there is, then show the amount of the item 
         print(f"  {len(low)} item(s) running low:\n")
-        for item in low:
+        for item in low: # then dislay the item 
             print(f"    {item}")
-
+#this will perform save to csv / load from csv
 def menu_save_load(inventory):
     _section("SAVE / LOAD INVENTORY")
     print("  1. Save inventory to CSV")
